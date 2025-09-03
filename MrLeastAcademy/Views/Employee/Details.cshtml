@@ -1,0 +1,21 @@
+﻿@using MrLeastAcademy.ViewModel;
+@model EmployeeCustomDataViewModel;
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<h2 style="color:@Model.Color">@Model.EmployeeName</h2>
+
+<h3>@Model.Message</h3>
+<h3>@Model.Temp</h3>
+
+<select>
+    @foreach (var branch in Model.Branches)
+    {
+        <option>@branch</option>
+    }
+</select>
+
+<h4>Department: @Model.DepartmentName</h4>
