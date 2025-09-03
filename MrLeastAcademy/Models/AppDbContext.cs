@@ -5,18 +5,20 @@ namespace MrLeastAcademy.Models
 {
     public class AppDbContext : DbContext
     {
-      public  DbSet<Department> Departments { get; set; }
-      public  DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
-        public AppDbContext():base()
+        public AppDbContext() : base()
         {
-            
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var configuration = new ConfigurationBuilder()
-                .AddJsonFile("Models\\appsetting.json")
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
                 .Build();
+
             var constr = configuration.GetSection("constr").Value;
 
             optionsBuilder.UseSqlServer(constr);
