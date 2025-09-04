@@ -38,12 +38,12 @@ namespace MrLeastAcademy.Controllers
                     Text = e.Name
                 }).ToList()
             };
-           
+
             return View("Edit", empViewModel);
         }
         // Save edits
         [HttpPost]
-        public IActionResult SaveEdit(int id , EmployeeCustomDataViewModel newEmp)
+        public IActionResult SaveEdit(int id, EmployeeCustomDataViewModel newEmp)
         {
             var depExists = context.Departments.Any(x => x.Id == newEmp.DepartmentId);
 
@@ -75,6 +75,26 @@ namespace MrLeastAcademy.Controllers
             return RedirectToAction("Index");
         }
 
-       
+        // new Employee
+        [HttpGet]
+        public IActionResult New()
+        {
+            ViewBag.Departments = context
+                .Departments.ToList();
+            return View("New");
+        }
+        [HttpPost]
+        public IActionResult SaveNew(Employee employee)
+        {
+            if(employee.Name !=null && employee.Salary >= 6000 && employee.Address != null && employee.JobTitle != null && employee.ImageUrl != null && context.Departments.Any(x => x.Id == employee.DepartmentId))
+            {
+                context.Employees.Add(employee);
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.Departments = context
+                .Departments.ToList();
+            return View("New", employee);
+        }
     }
 }

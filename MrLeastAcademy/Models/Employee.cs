@@ -17,6 +17,7 @@ namespace MrLeastAcademy.Models
         public string? Address { get; set; }
 
         [ForeignKey("Department")]
+        [Display(Name= "Department")]
         public int DepartmentId { get; set; }
 
         public Department? Department { get; set; }
