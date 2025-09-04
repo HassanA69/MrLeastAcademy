@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MrLeastAcademy.Models;
 using MrLeastAcademy.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MrLeastAcademy.Controllers
 {
@@ -17,19 +18,26 @@ namespace MrLeastAcademy.Controllers
         // Handle link
         public IActionResult Edit(int Id)
         {
-            Employee? employee = context.Employees.FirstOrDefault(x => x.Id == Id);
+            var employee = context.Employees.FirstOrDefault(x => x.Id == Id);
             if (employee == null)
                 return NotFound("No Employee with this Id");
-            List<Department> departments = context.Departments.ToList();
-            EmployeeCustomDataViewModel empViewModel = new EmployeeCustomDataViewModel();
-            empViewModel.Id = employee.Id;
-            empViewModel.Name = employee.Name;
-            empViewModel.Salary = employee.Salary;
-            empViewModel.Address = employee.Address;
-            empViewModel.JobTitle = employee.JobTitle;
-            empViewModel.ImageUrl = employee.ImageUrl;
-            empViewModel.DepartmentId = employee.DepartmentId;
-            empViewModel.Departments = departments;
+
+
+            var empViewModel = new EmployeeCustomDataViewModel
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Salary = employee.Salary,
+                Address = employee.Address,
+                JobTitle = employee.JobTitle,
+                ImageUrl = employee.ImageUrl,
+                DepartmentId = employee.DepartmentId,
+                Departments = context.Departments.Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Name
+                }).ToList()
+            };
            
             return View("Edit", empViewModel);
         }
@@ -41,7 +49,11 @@ namespace MrLeastAcademy.Controllers
 
             if (newEmp.Name == null || newEmp.Salary < 0 || newEmp.Address == null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
             {
-                newEmp.Departments = context.Departments.ToList();
+                newEmp.Departments = context.Departments.Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Name
+                }).ToList();
                 return View("edit", newEmp);
             }
 
