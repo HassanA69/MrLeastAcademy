@@ -15,31 +15,40 @@
 
             <label asp-for="Name"></label>
             <input asp-for="Name" class="form= form-control " />
+            <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
 
         <label asp-for="Salary"></label>
         <input asp-for="Salary" class="form= form-control " />
+        <span asp-validation-for="Salary" class="text-danger"></span>
+
     </div>
     <div class="form-group">
 
         <label asp-for="JobTitle"></label>
         <input asp-for="JobTitle" class="form= form-control " />
+        <span asp-validation-for="JobTitle" class="text-danger"></span>
+
     </div>
     <div class="form-group">
         <label asp-for="Address"></label>
         <input asp-for="Address" class="form= form-control " />
+        <span asp-validation-for="Address" class="text-danger"></span>
+
     </div>
     <div class="form-group">
 
         <label asp-for="ImageUrl"></label>
         <input asp-for="ImageUrl" class="form= form-control " />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+
     </div>
     <div class="form-group">
         <label asp-for="DepartmentId" class="form-label"></label>
         <select asp-for="DepartmentId" asp-items="DepList" class="form-control">
-            
         </select>
+        <span asp-validation-for="DepartmentId" class="text-danger"></span>
     </div>
     <div class="mt-3">
         <input type="submit" value="Create" class="btn btn-outline-success me-2" />

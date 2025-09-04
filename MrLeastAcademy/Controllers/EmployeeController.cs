@@ -43,11 +43,14 @@ namespace MrLeastAcademy.Controllers
         }
         // Save edits
         [HttpPost]
+
         public IActionResult SaveEdit(int id, EmployeeCustomDataViewModel newEmp)
         {
-            var depExists = context.Departments.Any(x => x.Id == newEmp.DepartmentId);
+            
 
-            if (newEmp.Name == null || newEmp.Salary < 0 || newEmp.Address == null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
+            
+            //if (newEmp.Name == null || newEmp.Salary < 0 || newEmp.Address == null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
+            if(!ModelState.IsValid )
             {
                 newEmp.Departments = context.Departments.Select(e => new SelectListItem
                 {
@@ -76,17 +79,20 @@ namespace MrLeastAcademy.Controllers
         }
 
         // new Employee
-        [HttpGet]
+        [HttpPost]
         public IActionResult New()
         {
             ViewBag.Departments = context
                 .Departments.ToList();
             return View("New");
         }
+
+        // Save New Employee
         [HttpPost]
         public IActionResult SaveNew(Employee employee)
         {
-            if(employee.Name !=null && employee.Salary >= 6000 && employee.Address != null && employee.JobTitle != null && employee.ImageUrl != null && context.Departments.Any(x => x.Id == employee.DepartmentId))
+           // if(employee.Name !=null && employee.Salary >= 6000 && employee.Address != null && employee.JobTitle != null && employee.ImageUrl != null && context.Departments.Any(x => x.Id == employee.DepartmentId))
+            if (ModelState.IsValid && context.Departments.Any(x => x.Id == employee.DepartmentId))
             {
                 context.Employees.Add(employee);
                 context.SaveChanges();
