@@ -1,4 +1,5 @@
-﻿@model Employee
+﻿@using MrLeastAcademy.ViewModel
+@model EmployeeCustomDataViewModel
 @{
     ViewData["Title"] = "Edit";
 }
@@ -26,9 +27,26 @@
         <label for="ImageUrl">Image Url</label>
         <input type="text" class="form-control" id="ImageUrl" name="ImageUrl" value="@Model?.ImageUrl" />
     </div>
-    <div class="form-group">
-        <label for="DepartmentId">DepartmentId</label>
-        <input type="number" class="form-control" id="DepartmentId" name="DepartmentId" value="@Model?.DepartmentId" />
+    <div>
+        <label for="DepartmentId">Department</label>
+        <select id="DepartmentId" name="DepartmentId" class="form-select" aria-label="Default select example">
+            @foreach (var dept in Model?.Departments)
+            {
+                if (dept.Id == Model.DepartmentId)
+                {
+                    <option value="@dept.Id" selected>@dept.Name</option>
+
+                }
+                else
+                {
+                    <option value="@dept.Id">@dept.Name</option>
+
+                }
+
+            }
+
+        </select>
     </div>
+
     <input type="submit" value="Save" class="btn btn-primary" />
 </form>

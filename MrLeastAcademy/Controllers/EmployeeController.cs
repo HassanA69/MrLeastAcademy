@@ -17,24 +17,40 @@ namespace MrLeastAcademy.Controllers
         // Handle link
         public IActionResult Edit(int Id)
         {
-            Employee employee = context.Employees.FirstOrDefault(x => x.Id == Id);
-
+            Employee? employee = context.Employees.FirstOrDefault(x => x.Id == Id);
             if (employee == null)
                 return NotFound("No Employee with this Id");
-            return View("Edit", employee);
+            List<Department> departments = context.Departments.ToList();
+            EmployeeCustomDataViewModel empViewModel = new EmployeeCustomDataViewModel();
+            empViewModel.Id = employee.Id;
+            empViewModel.Name = employee.Name;
+            empViewModel.Salary = employee.Salary;
+            empViewModel.Address = employee.Address;
+            empViewModel.JobTitle = employee.JobTitle;
+            empViewModel.ImageUrl = employee.ImageUrl;
+            empViewModel.DepartmentId = employee.DepartmentId;
+            empViewModel.Departments = departments;
+           
+            return View("Edit", empViewModel);
         }
         // Save edits
         [HttpPost]
-        public IActionResult SaveEdit(Employee newEmp)
+        public IActionResult SaveEdit(int id , EmployeeCustomDataViewModel newEmp)
         {
             var depExists = context.Departments.Any(x => x.Id == newEmp.DepartmentId);
 
-            if (newEmp.Name ==null || newEmp.Salary<0 || newEmp.Address==null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
+            if (newEmp.Name == null || newEmp.Salary < 0 || newEmp.Address == null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
             {
+                newEmp.Departments = context.Departments.ToList();
                 return View("edit", newEmp);
             }
-            
+
             var oldEmp = context.Employees.FirstOrDefault(x => x.Id == newEmp.Id);
+            if (oldEmp == null)
+            {
+                return NotFound("Employee not found");
+            }
+
             oldEmp.Name = newEmp.Name;
             oldEmp.Salary = newEmp.Salary;
             oldEmp.Address = newEmp.Address;
@@ -47,23 +63,6 @@ namespace MrLeastAcademy.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Details(int Id)
-        {
-            var employee = context.Employees
-                 .Include(x => x.Department)
-                 .FirstOrDefault(x => x.Id == Id);
-
-            EmployeeCustomDataViewModel employeeCustomData = new EmployeeCustomDataViewModel();
-            List<string> branches = new List<string>() { "Cairo", "Alex", "Assiut" };
-
-            employeeCustomData.EmployeeName = employee.Name;
-            employeeCustomData.DepartmentName = employee.Department.Name;
-            employeeCustomData.Branches = branches;
-            employeeCustomData.Temp = 38;
-            employeeCustomData.Message = "gigit gigit gooo";
-            employeeCustomData.Color = "red";
-            return View("Details", employeeCustomData);
-
-        }
+       
     }
 }

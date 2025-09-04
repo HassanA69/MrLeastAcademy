@@ -1,16 +1,23 @@
-﻿namespace MrLeastAcademy.ViewModel
+﻿using MrLeastAcademy.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MrLeastAcademy.ViewModel
 {
     public class EmployeeCustomDataViewModel
     {
-        public string EmployeeName { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
 
-        public string DepartmentName { get; set; }
+        public int Salary { get; set; }
 
-        public List<string> Branches { get; set; }
+        public string? JobTitle { get; set; }
+        public string? ImageUrl { get; set; }
 
-        public int Temp { get; set; }
-        public string Message { get; set; }
+        public string? Address { get; set; }
 
-        public string Color { get; set; }
+        public int DepartmentId { get; set; }
+        public List<Department>? Departments { get; set; }
+
+      
     }
 }
