@@ -79,7 +79,7 @@ namespace MrLeastAcademy.Controllers
         }
 
         // new Employee
-        [HttpPost]
+        
         public IActionResult New()
         {
             ViewBag.Departments = context
