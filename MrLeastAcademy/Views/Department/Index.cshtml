@@ -8,14 +8,19 @@
     <tr>
         <th>No.</th>
         <th>Name</th>
+        <th>Manager </th>
     </tr>
     @foreach(var dep in Model)
     {
         <tr>
             <td>@dep.Id</td>
             <td>@dep.Name</td>
+            <td>@dep.ManagerName</td>
+
+            <td><a asp-action="edit" asp-route-Id="@dep.Id" class="btn btn-outline-warning">Edit</a> <a href="/employee/delete/@dep.Id" class="btn btn-outline-danger">Delete</a></td>
 
         </tr>
     }
+
 </table>
 <a href="/department/add" class=" btn btn-outline-success">Add Department</a>
