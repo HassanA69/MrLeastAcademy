@@ -53,6 +53,15 @@ namespace MrLeastAcademy.Controllers
             }
             return View("Edit", department);
         }
+
+        public IActionResult IsValidDepartmentName(string Name)
+        {
+            var dept = context.Departments.FirstOrDefault(x => x.Name.ToLower() == Name.ToLower());
+            if (dept == null)
+                return Json(true);
+            return Json("This department name is already exists. Please enter a unique name.");
+
+        }
     }
 
 }
