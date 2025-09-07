@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using MrLeastAcademy.Models;
+using MrLeastAcademy.Repository;
+
 namespace MrLeastAcademy
 {
     public class Program
@@ -5,10 +9,15 @@ namespace MrLeastAcademy
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var constr = builder.Configuration.GetConnectionString("constr");
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                             options.UseSqlServer(constr)
+                 );
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

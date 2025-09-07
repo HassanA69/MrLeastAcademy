@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MrLeastAcademy.Models;
+using MrLeastAcademy.Repository;
 
 namespace MrLeastAcademy.Controllers
 {
     public class DepartmentController : Controller
     {
-        AppDbContext context = new AppDbContext();
-
-
+        IDepartmentRepository departmentRepository;
+        IEmployeeRepository employeeRepository;
+        public DepartmentController(IDepartmentRepository _departmentRepository, IEmployeeRepository _employeeRepository)
+        {
+            departmentRepository = _departmentRepository;
+            employeeRepository = _employeeRepository;
+        }
         public IActionResult Index()
         {
-            List<Department> departments = context.Departments.ToList();
+             var departments = departmentRepository.GetAll();
 
             return View("Index", departments);
         }
@@ -24,18 +29,22 @@ namespace MrLeastAcademy.Controllers
         {
             if(ModelState.IsValid)
             {
-                context.Departments.Add(department);
-                context.SaveChanges();
-                return Redirect("Index");
+                departmentRepository.Add(department);
+                departmentRepository.Save();
+                return RedirectToAction("Index");
             }
-            return View("Add" ,department);
+            return View(department);
         }
+        
         public IActionResult Edit(int Id)
         {
-            Department department = context.Departments.FirstOrDefault(x => x.Id == Id);
+            if (Id <= 0)
+                return BadRequest("Invalid Department ID");
+
+            var department = departmentRepository.GetById(Id);
             if (department == null)
                 return NotFound("No Department with this Id");
-            return View("Edit", department);
+            return View("edit", department);
 
         }
 
@@ -45,22 +54,32 @@ namespace MrLeastAcademy.Controllers
         {
             if (ModelState.IsValid)
             {
-                var oldDept = context.Departments.FirstOrDefault(x => x.Id == id);
-                oldDept.Name = department.Name;
-                oldDept.ManagerName = department.ManagerName;
-                context.SaveChanges();
+                departmentRepository.Update(department);
+                departmentRepository.Save();
                 return RedirectToAction("Index");
             }
             return View("Edit", department);
         }
 
-        public IActionResult IsValidDepartmentName(string Name)
+        [HttpGet]
+        public JsonResult IsValidDepartmentName(string name, int Id)
         {
-            var dept = context.Departments.FirstOrDefault(x => x.Name.ToLower() == Name.ToLower());
-            if (dept == null)
-                return Json(true);
-            return Json("This department name is already exists. Please enter a unique name.");
-
+            var isValid = departmentRepository.IsValidDepartmentName(name, Id);
+            return Json(isValid);
+        }
+        public IActionResult Delete(int Id)
+        {
+            var department = departmentRepository.GetByIdWithEmployees(Id);
+            if (department == null)
+                return NotFound("No Department with this Id");
+            if (department.Employees.Any())
+            {
+                ModelState.AddModelError("", "Cannot delete department with assigned employees.");
+                return View("Index", departmentRepository.GetAll());
+            }
+            departmentRepository.Delete(Id);
+            departmentRepository.Save();
+            return RedirectToAction("Index");
         }
     }
 

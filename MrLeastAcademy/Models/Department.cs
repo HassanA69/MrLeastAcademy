@@ -12,7 +12,7 @@ namespace MrLeastAcademy.Models
         [Required(ErrorMessage = "Department name is required.")]
         [StringLength(50, ErrorMessage = "Department name must be between 2 and 50 characters.", MinimumLength = 2)]
         [Display(Name = "Department Name")]
-        [Remote(action: "IsValidDepartmentName", controller: "Department", ErrorMessage = "Department name already exists.")]
+        [Remote(action: "IsValidDepartmentName", controller: "Department", AdditionalFields = "Id", ErrorMessage = "Department name already exists.")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Manager name is required.")]

@@ -21,7 +21,14 @@
             <td>@emp.Name</td>
             <td>@emp.Salary</td>
             <td>@emp.Address</td>
-            <td><a asp-action="edit" asp-route-Id="@emp.Id" class="btn btn-outline-warning">Edit</a> <a href="/employee/delete/@emp.Id" class="btn btn-outline-danger">Delete</a></td>
+            <td><a asp-action="edit" asp-route-Id="@emp.Id" class="btn btn-outline-warning">Edit</a>
+                <form asp-action="Delete" asp-route-id="@emp.Id" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-outline-danger"
+                            onclick="return confirm('Are you sure you want to delete @emp.Name ?');">
+                        Delete
+                    </button>
+                </form>
+            </td>
         </tr>
     }
 </table>

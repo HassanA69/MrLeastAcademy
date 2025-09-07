@@ -3,22 +3,33 @@ using Microsoft.EntityFrameworkCore;
 using MrLeastAcademy.Models;
 using MrLeastAcademy.ViewModel;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MrLeastAcademy.Repository;
 
 namespace MrLeastAcademy.Controllers
 {
     public class EmployeeController : Controller
     {
-        AppDbContext context = new AppDbContext();
+        IEmployeeRepository employeeRepository;
+        IDepartmentRepository departmentRepository;
+        public EmployeeController(IEmployeeRepository _employeeRepository, IDepartmentRepository _departmentRepository)
+        {
+            employeeRepository = _employeeRepository;
+            departmentRepository = _departmentRepository;
+        }
 
         public IActionResult Index()
         {
-            return View("Index", context.Employees.ToList());
+            return View("Index", employeeRepository.GetAll() );
         }
 
         // Handle link
         public IActionResult Edit(int Id)
         {
-            var employee = context.Employees.FirstOrDefault(x => x.Id == Id);
+            if(Id <= 0)
+            {
+                return BadRequest("Invalid Employee ID");
+            }
+           Employee employee= employeeRepository.GetById(Id);
             if (employee == null)
                 return NotFound("No Employee with this Id");
 
@@ -32,11 +43,13 @@ namespace MrLeastAcademy.Controllers
                 JobTitle = employee.JobTitle,
                 ImageUrl = employee.ImageUrl,
                 DepartmentId = employee.DepartmentId,
-                Departments = context.Departments.Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Name
-                }).ToList()
+                Departments = departmentRepository.GetAll()
+                        .Select(d => new SelectListItem
+                        {
+                            Value = d.Id.ToString(),
+                            Text = d.Name
+                        }).ToList()
+
             };
 
             return View("Edit", empViewModel);
@@ -46,21 +59,17 @@ namespace MrLeastAcademy.Controllers
 
         public IActionResult SaveEdit(int id, EmployeeCustomDataViewModel newEmp)
         {
-            
-
-            
-            //if (newEmp.Name == null || newEmp.Salary < 0 || newEmp.Address == null || newEmp.JobTitle == null || newEmp.ImageUrl == null || !depExists)
-            if(!ModelState.IsValid )
+            if (!ModelState.IsValid)
             {
-                newEmp.Departments = context.Departments.Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Name
-                }).ToList();
+                newEmp.Departments =employeeRepository.GetAll()
+                    .Select(e => new SelectListItem{
+                        Value = e.Id.ToString(),
+                        Text = e.Name
+                    }).ToList();
                 return View("edit", newEmp);
             }
 
-            var oldEmp = context.Employees.FirstOrDefault(x => x.Id == newEmp.Id);
+            var oldEmp = employeeRepository.GetById(id);
             if (oldEmp == null)
             {
                 return NotFound("Employee not found");
@@ -73,17 +82,17 @@ namespace MrLeastAcademy.Controllers
             oldEmp.ImageUrl = newEmp.ImageUrl;
             oldEmp.DepartmentId = newEmp.DepartmentId;
 
-            context.SaveChanges();
+            employeeRepository.Update(oldEmp);
+            employeeRepository.Save();
 
             return RedirectToAction("Index");
         }
 
         // new Employee
-        
+
         public IActionResult New()
         {
-            ViewBag.Departments = context
-                .Departments.ToList();
+            ViewBag.Departments = departmentRepository.GetAll();
             return View("New");
         }
 
@@ -91,16 +100,27 @@ namespace MrLeastAcademy.Controllers
         [HttpPost]
         public IActionResult SaveNew(Employee employee)
         {
-           // if(employee.Name !=null && employee.Salary >= 6000 && employee.Address != null && employee.JobTitle != null && employee.ImageUrl != null && context.Departments.Any(x => x.Id == employee.DepartmentId))
-            if (ModelState.IsValid && context.Departments.Any(x => x.Id == employee.DepartmentId))
+            var depExists = departmentRepository.Exists(employee.DepartmentId);
+            if (ModelState.IsValid && !depExists)
             {
-                context.Employees.Add(employee);
-                context.SaveChanges();
+                employeeRepository.Add(employee);
+                employeeRepository.Save();
                 return RedirectToAction("Index");
             }
-            ViewBag.Departments = context
-                .Departments.ToList();
+            ViewBag.Departments = departmentRepository.GetAll();
             return View("New", employee);
+        }
+        // Delete Employee
+        public IActionResult Delete(int id)
+        {
+            var emp = employeeRepository.GetById(id);
+            if (emp == null)
+                return NotFound();
+
+            employeeRepository.Delete(id);
+            employeeRepository.Save();
+
+            return RedirectToAction("Index");
         }
     }
 }

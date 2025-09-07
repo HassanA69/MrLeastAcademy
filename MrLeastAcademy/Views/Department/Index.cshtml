@@ -4,6 +4,7 @@
 }
 
 <h1>All Department</h1>
+<div asp-validation-summary="All" ></div>
 <table class="table tabe-hover table-bordered">
     <tr>
         <th>No.</th>
@@ -17,7 +18,14 @@
             <td>@dep.Name</td>
             <td>@dep.ManagerName</td>
 
-            <td><a asp-action="edit" asp-route-Id="@dep.Id" class="btn btn-outline-warning">Edit</a> <a href="/employee/delete/@dep.Id" class="btn btn-outline-danger">Delete</a></td>
+            <td><a asp-action="edit" asp-route-Id="@dep.Id" class="btn btn-outline-warning">Edit</a>
+                <form asp-action="Delete" asp-route-id="@dep.Id" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-outline-danger"
+                            onclick="return confirm('Are you sure you want to delete @dep.Name ?');">
+                        Delete
+                    </button>
+                </form>
+            </td>
 
         </tr>
     }

@@ -6,6 +6,7 @@
 <h1>Edit Department</h1>
 
 <form asp-action="saveEdit" asp-route-Id="@Model.Id" method="post"  >
+    <input type="hidden" asp-for="Id" />
     <div class="form-control">
         <label asp-for="Name" ></label>
         <input asp-for="Name" class="form-control" />
