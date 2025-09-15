@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MrLeastAcademy.Models;
 using MrLeastAcademy.Repository;
@@ -18,6 +19,8 @@ namespace MrLeastAcademy
             builder.Services.AddDbContext<AppDbContext>(options =>
                              options.UseSqlServer(constr)
                  );
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,7 +35,7 @@ namespace MrLeastAcademy
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -47,6 +47,10 @@ namespace MrLeastAcademy.Repository
         {
             context.SaveChanges();
         }
-        
+
+        public List<Employee> GetEmployeesByDepartment(int departmentId)
+        {
+            return context.Employees.Where(x => x.DepartmentId == departmentId).ToList();
+        }
     }
 }

@@ -23,6 +23,6 @@ namespace MrLeastAcademy.Repository
 
         public void Save();
        
-
+        public List<Employee> GetEmployeesByDepartment(int departmentId);
     }
 }

@@ -4,9 +4,12 @@ using MrLeastAcademy.Models;
 using MrLeastAcademy.ViewModel;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MrLeastAcademy.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MrLeastAcademy.Controllers
 {
+
+    [Authorize]
     public class EmployeeController : Controller
     {
         IEmployeeRepository employeeRepository;
