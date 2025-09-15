@@ -1,21 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MrLeastAcademy.Models;
 using MrLeastAcademy.Repository;
 
 namespace MrLeastAcademy.Controllers
 {
+
+    [Authorize]
     public class DepartmentController : Controller
     {
-        IDepartmentRepository departmentRepository;
-        IEmployeeRepository employeeRepository;
-        public DepartmentController(IDepartmentRepository _departmentRepository, IEmployeeRepository _employeeRepository)
+        IDepartmentRepository _departmentRepository;
+        IEmployeeRepository _employeeRepository;
+        public DepartmentController(IDepartmentRepository departmentRepository, IEmployeeRepository employeeRepository)
         {
-            departmentRepository = _departmentRepository;
-            employeeRepository = _employeeRepository;
+            _departmentRepository = departmentRepository;
+            _employeeRepository = employeeRepository;
         }
+
+        public IActionResult DeptEmps()
+        {
+            return View("DeptEmps", _departmentRepository.GetAll());
+        }
+
+        public IActionResult GetEmployees(int id)
+        {
+            List<Employee> employees = _employeeRepository.GetEmployeesByDepartment(id);
+            return Json( employees );
+        }
+        
         public IActionResult Index()
         {
-             var departments = departmentRepository.GetAll();
+             var departments = _departmentRepository.GetAll();
 
             return View("Index", departments);
         }
@@ -29,8 +45,8 @@ namespace MrLeastAcademy.Controllers
         {
             if(ModelState.IsValid)
             {
-                departmentRepository.Add(department);
-                departmentRepository.Save();
+                _departmentRepository.Add(department);
+                _departmentRepository.Save();
                 return RedirectToAction("Index");
             }
             return View(department);
@@ -41,7 +57,7 @@ namespace MrLeastAcademy.Controllers
             if (Id <= 0)
                 return BadRequest("Invalid Department ID");
 
-            var department = departmentRepository.GetById(Id);
+            var department = _departmentRepository.GetById(Id);
             if (department == null)
                 return NotFound("No Department with this Id");
             return View("edit", department);
@@ -54,8 +70,8 @@ namespace MrLeastAcademy.Controllers
         {
             if (ModelState.IsValid)
             {
-                departmentRepository.Update(department);
-                departmentRepository.Save();
+                _departmentRepository.Update(department);
+                _departmentRepository.Save();
                 return RedirectToAction("Index");
             }
             return View("Edit", department);
@@ -64,21 +80,21 @@ namespace MrLeastAcademy.Controllers
         [HttpGet]
         public JsonResult IsValidDepartmentName(string name, int Id)
         {
-            var isValid = departmentRepository.IsValidDepartmentName(name, Id);
+            var isValid = _departmentRepository.IsValidDepartmentName(name, Id);
             return Json(isValid);
         }
         public IActionResult Delete(int Id)
         {
-            var department = departmentRepository.GetByIdWithEmployees(Id);
+            var department = _departmentRepository.GetByIdWithEmployees(Id);
             if (department == null)
                 return NotFound("No Department with this Id");
             if (department.Employees.Any())
             {
                 ModelState.AddModelError("", "Cannot delete department with assigned employees.");
-                return View("Index", departmentRepository.GetAll());
+                return View("Index", _departmentRepository.GetAll());
             }
-            departmentRepository.Delete(Id);
-            departmentRepository.Save();
+            _departmentRepository.Delete(Id);
+            _departmentRepository.Save();
             return RedirectToAction("Index");
         }
     }

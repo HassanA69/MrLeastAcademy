@@ -1,0 +1,55 @@
+
+@{
+    ViewData["Title"] = "DeptEmps";
+   
+}
+
+<h1>DeptEmps</h1>
+
+<select id="DeptId" name="DeptId" class="form form-control" onchange="GetEmp()">
+    <option value="0">----All Departments----</option>
+    @foreach (var dept in Model)
+    {
+        <option value="@dept.Id">@dept.Name</option>
+    }
+</select>
+<select id="Emps" name="Emps" class="form form-control">
+    <option value="0">----All Employees----</option>
+    
+</select>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    
+    function GetEmp(){
+        const deptId = document.getElementById("DeptId").value;
+        const emps = document.getElementById("Emps");
+        emps.innerHTML = "";
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "0";
+        defaultOption.textContent = "----All employees----";
+        emps.appendChild(defaultOption);
+
+       
+
+        $.ajax({url: "/department/GetEmployees?id="+deptId
+            , success: function(result){
+                console.log(result);
+                for (const emp of result) {
+                    const option = document.createElement("option");
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    emps.appendChild(option);
+                }
+               
+                
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching employees:", error);
+                alert("Failed to load employees. Please try again.");
+            }
+
+        });
+    }
+</script>
